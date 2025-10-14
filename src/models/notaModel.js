@@ -11,12 +11,12 @@ export const Nota = {
         return rows[0];
     },
 
-    criar: async (titulo, conteudo) => {
+    criar: async (titulo, conteudo, categorias, tags) => {
         const [result] = await db.query(
-            "INSERT INTO nota (titulo, conteudo) VALUES (?, ?)",
-            [titulo, conteudo]
+            "INSERT INTO nota (titulo, conteudo, categoria, tags) VALUES (?, ?, ?, ?)",
+            [titulo, conteudo, JSON.stringify(categorias), JSON.stringify(tags)]
         );
-        return { id: result.insertId, titulo, conteudo };
+        return { id: result.insertId, titulo, conteudo, categorias, tags };
     },
 
     atualizar: async (id, titulo, conteudo) => {

@@ -1,4 +1,5 @@
 import { Nota } from "../models/notaModel.js";
+import { analisarNota } from "../services/geminiService.js";
 
 export const notaController = {
     listarNotas: async (req, res) => {
@@ -18,20 +19,23 @@ export const notaController = {
             if (nota) {
                 res.json(nota);
             } else {
-                res.status(404).json({ error: "Nota não encontrada" });
+                res.status(404).json({ error: error.message });
             }
         } catch (error) {
-            res.status(500).json({ error: "Erro ao listar nota" });
+            res.status(500).json({ error: error.message });
         }
     },
 
     criarNota: async (req, res) => {
-        const { titulo, conteudo } = req.body;
+        const { conteudo } = req.body;
         try {
-            const novaNota = await Nota.criar(titulo, conteudo);
+            const { titulo: tituloGerado, categorias, tags } = await analisarNota(conteudo);
+
+            const novaNota = await Nota.criar(tituloGerado, conteudo, categorias, tags);
+
             res.status(201).json(novaNota);
         } catch (error) {
-            res.status(500).json({ error: "Erro ao criar nota" });
+            res.status(500).json({ error: error.message });
         }
     },
 
@@ -42,7 +46,7 @@ export const notaController = {
             const notaAtualizada = await Nota.atualizar(id, titulo, conteudo);
             res.json(notaAtualizada);
         } catch (error) {
-            res.status(500).json({ error: "Erro ao atualizar nota" });
+            res.status(500).json({ error: error.message });
         }
     },
 
@@ -52,7 +56,7 @@ export const notaController = {
             await Nota.deletar(id);
             res.status(204).send();
         } catch (error) {
-            res.status(500).json({ error: "Erro ao deletar nota" });
+            res.status(500).json({ error: error.message });
         }
     }
 };
