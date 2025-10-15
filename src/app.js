@@ -10,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/notes", notaRoutes);
+app.use("/api/notas", notaRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Synapse API rodando" });
